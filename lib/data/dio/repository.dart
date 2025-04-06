@@ -1,15 +1,14 @@
 import 'package:dio/dio.dart';
 import '../../domain/entities/photo.dart';
+Future<List<Photo>> fetchPhotos({required int page, required int limit}) async {
 
-final Dio _dio = Dio();
+  final Dio dio = Dio();
 
-Future<List<Photo>> fetchPhotos({int page = 1, int limit = 0}) async {
-
-  Response response = await _dio.get(
+  Response response = await dio.get(
     'https://jsonplaceholder.typicode.com/photos',
     queryParameters: {
       '_page': page, 
-      '_limit': limit
+      '_limit': limit,
     },
   );
 
