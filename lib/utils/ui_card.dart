@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import '../pages/photo_details/photo_details_page.dart';
 
-class UiCard extends StatefulWidget {
+class UiCard extends StatelessWidget{
   final String title;
   final String url;
-  const UiCard({super.key, required this.title, required this.url});
-
-  @override
-  State<UiCard> createState() => _UiCardState();
-}
-
-class _UiCardState extends State<UiCard> {
-  bool isChecked = false;
+  final bool selected;
+  final VoidCallback onToggle;
+  const UiCard({
+    super.key,
+    required this.title,
+    required this.url,
+    required this.selected,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -35,35 +36,30 @@ class _UiCardState extends State<UiCard> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Checkbox(
-                value: isChecked,
-                onChanged: (value) {
-                  isChecked = value ?? false;
-                  setState(() {});
-                },
-              ),
-              Expanded(
-                child: Text(
-                  widget.title,
-                  softWrap: true,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => PhotoDetailsPage(photoId: 0,)), // Replace 0 with the correct photo ID if available
-                  );
-                },
-                icon: Icon(Icons.arrow_forward_ios),
-              ),
-            ],
+          Checkbox(value: selected, onChanged: (_) => onToggle()),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.network(
+              url,
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Icon(Icons.broken_image),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 16),
+              softWrap: true,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.arrow_forward_ios),
           ),
         ],
       ),
