@@ -24,24 +24,38 @@ class _PhotoDetailsPageState extends State<PhotoDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Photo Details')),
+      appBar: AppBar(title: const Text('Detalhes da Foto')),
       body: BlocBuilder<PhotoDetailsCubit, PhotoDetailsState>(
         bloc: _cubit,
         builder: (_, state) {
-          if (state.photo.id == null && state.isLoading == false) {
-            return Text('Foto nao encontrada');
-          }
           if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          return Center(
+
+          if (state.photo.url == null || state.photo.id == null) {
+            return const Center(child: Text('Erro ao carregar a imagem da foto'));
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text((state.photo.id ?? 0).toString()),
-                Text(state.photo.thumbnailUrl ?? ''),
-                Text(state.photo.title ?? ''),
-                Text((state.photo.albumId ?? 0).toString()),
+                Image.network(
+                  state.photo.url!,
+                  width: double.infinity,
+                  height: 300,
+                  fit: BoxFit.cover,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  state.photo.title ?? '',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text('ID: ${state.photo.id}'),
+                Text('Album ID: ${state.photo.albumId}'),
               ],
             ),
           );
