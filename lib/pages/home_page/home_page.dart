@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('teste'),),
+      title: const Text('teste'),),
       body: BlocBuilder<PhotoCubit, PhotoState>(
         bloc: _cubit,
         builder: (_, state) {
