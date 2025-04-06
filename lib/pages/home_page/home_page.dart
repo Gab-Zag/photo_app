@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:photo_app/pages/selected_page/seleceted_photos_pages.dart';
 import 'package:photo_app/utils/ui_card.dart';
 
 import 'cubit/photo_cubit.dart';
@@ -15,19 +15,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late PhotoCubit _cubit;
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _cubit = PhotoCubit()..getPhotos();
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 300) {
-        _cubit.getPhotos(loadMore: true);
-      }
-    });
   }
 
   @override
@@ -39,15 +31,32 @@ class _HomePageState extends State<HomePage> {
           BlocBuilder<PhotoCubit, PhotoState>(
             bloc: _cubit,
             builder: (_, state) {
-              if (state.selectedPhotoIds.isEmpty) {
-                return const SizedBox.shrink();
-              }
               return Row(
                 children: [
+                  IconButton(
+                    icon: const Icon(Icons.favorite),
+                    onPressed: () {
+                      final selectPhotos =
+                          state.photos
+                              .where(
+                                (photo) =>
+                                    state.selectedPhotoIds.contains(photo.id),
+                              )
+                              .toList();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (_) => SelecetedPhotosPages(
+                                selectedPhotos: selectPhotos,
+                              ),
+                        ),
+                      );
+                    },
+                  ),
                   Text('${state.selectedPhotoIds.length}'),
                   IconButton(
-                    onPressed: () => _cubit.clearSelections(),
                     icon: const Icon(Icons.delete_outline),
+                    onPressed: () => _cubit.clearSelections(),
                   ),
                 ],
               );
@@ -55,40 +64,34 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () => _cubit.previousPage(),
-                  icon: Icon(Icons.arrow_back_ios),
-                ),
-                IconButton(
-                  onPressed: () => _cubit.nextPage(),
-                  icon: Icon(Icons.arrow_forward_ios),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: BlocBuilder<PhotoCubit, PhotoState>(
-              bloc: _cubit,
-              builder: (_, state) {
-                if (state.photos.isEmpty && state.isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator.adaptive(),
-                  );
-                }
-                if (state.photos.isEmpty && !state.isLoading) {
-                  return const Center(child: Text('Fotos nao encontradas'));
-                }
-                return ListView.separated(
-                  controller: _scrollController,
+      body: BlocBuilder<PhotoCubit, PhotoState>(
+        bloc: _cubit,
+        builder: (_, state) {
+          if (state.isLoading && state.photos.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.photos.isEmpty) {
+            return const Center(child: Text('Nenhuma foto encontrada'));
+          }
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () => _cubit.previousPage(),
+                    icon: Icon(Icons.arrow_back_ios),
+                  ),
+                  IconButton(
+                    onPressed: () => _cubit.nextPage(),
+                    icon: Icon(Icons.arrow_forward_ios),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ListView.separated(
                   itemCount: state.photos.length,
-                  separatorBuilder: (_, __) => const Gap(10),
+                  separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (_, index) {
                     final photo = state.photos[index];
                     final isSelected = state.selectedPhotoIds.contains(
@@ -96,16 +99,16 @@ class _HomePageState extends State<HomePage> {
                     );
                     return UiCard(
                       title: photo.title ?? '',
-                      url: photo.url ?? '',
+                      url: photo.thumbnailUrl ?? '',
                       selected: isSelected,
                       onToggle: () => _cubit.toggleSelection(photo.id!),
                     );
                   },
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
