@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/photo_details/photo_details_page.dart';
 
 class UiCard extends StatefulWidget {
   final String title;
@@ -54,7 +55,14 @@ class _UiCardState extends State<UiCard> {
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
-              IconButton(onPressed: (){}, icon: Icon(Icons.arrow_forward_ios))
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => PhotoDetailsPage(photoId: 0,)), // Replace 0 with the correct photo ID if available
+                  );
+                },
+                icon: Icon(Icons.arrow_forward_ios),
+              ),
             ],
           ),
         ],
