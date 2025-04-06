@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:photo_app/domain/entities/photo.dart';
+import '../../../domain/entities/photo.dart';
 
 class PhotoDetailsState extends Equatable{
   final bool isLoading;
