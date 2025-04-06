@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photo_app/pages/photo_details/photo_details_page.dart';
 
 class UiCard extends StatelessWidget{
   final String title;
@@ -46,7 +47,7 @@ class UiCard extends StatelessWidget{
               width: 50,
               height: 50,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Icon(Icons.broken_image),
+              errorBuilder: (_, __, ___) => Icon(Icons.image),
             ),
           ),
           const SizedBox(width: 12),
@@ -58,7 +59,9 @@ class UiCard extends StatelessWidget{
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () { 
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => PhotoDetailsPage(photoId: int.tryParse(url) ?? 0)));
+            },
             icon: const Icon(Icons.arrow_forward_ios),
           ),
         ],
